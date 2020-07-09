@@ -191,6 +191,32 @@ def class_warfare(df, key=1, plot=False):
 
     return rdf
 
+def normalize_cp (arr):
+    """
+    Normalizes a colorplot from any range of currents to be between 0 and 1. It accounts for possible negative numbers
+    as well.
+    :param arr:
+    :return:
+    """
+    # Gets the minimum value of the dataframe
+    mn = np.min(arr)
+
+    # If the minimum is negative, adusts everyvalue to be positive and normalizes 0 and 1.
+    if mn < 0:
+        mx = np.max(arr) + abs(mn)
+        ar1 = (arr + abs(mn))/mx
+
+    else:
+        mx = np.max(arr) - abs(mn)
+        ar1 = (arr - abs(mn)) / mx
+
+    if np.min(ar1) != 0:
+        print('Normalization failed')
+
+    else:
+        print('Success')
+
+    return ar1
 
 
 
