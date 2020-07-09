@@ -142,7 +142,54 @@ dff = chunker(paths).reset_index()
 
 print(dff['Color Plots'][0].shape)
 
+def class_warfare(df, key=1, plot=False):
+    '''
+    Deals with uneven classes for different labels
+    :param df: The dataframe which you would like to make even
+    :param key: the list index of the class you would like to make even (0: regions, 1: sex)
+    :param plot: If this is true the evening will be plotted.
+    :return: Dataframe with even classes based on the minorty class
+    '''
 
+    # Imports useful tools
+    from sklearn.utils import shuffle
+
+    # Takes the df and grabs the labels desired
+    labels = df['Labels']
+    labels = [l[key] for l in labels]
+    new_name = 'Labels ' + str(key)
+    df[new_name] = labels
+
+    df = shuffle(df)
+
+    # Gets unique class names
+    un_labs = list(set(labels))
+
+    # Creates dictionary of labels and counts
+    d = {i: labels.count(i) for i in labels}
+
+    # Gets the smallest class name and the number of data points there (min_val).
+    name = min(d, key=d.get)
+    min_val = d[name]
+
+    # Creates separate dataframes for each unique label
+    dfs_lst = []
+    for l in un_labs:
+        df_w = df[df[new_name] == l]
+        dfs_lst.append(df_w)
+
+    # Limits the larger df sizes to the minority class size
+    dfs_lst = [df[:min_val] for df in dfs_lst]
+
+    # Concatenates back to a single dataframe to return
+    rdf = pd.concat(dfs_lst)
+
+    # Plots variables in return dataframe in plt = true
+    if plot == True:
+        sns.countplot(rdf[new_name])
+        plt.show()
+
+    return rdf
 
 
 
